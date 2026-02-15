@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_BASE = '/api/v1';
 
 // Configure axios defaults
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'https://api-sepiri.vercel.app';
 
 class ApiService {
   // Institutes
@@ -36,6 +36,7 @@ class ApiService {
   static async getCertificates(filters = {}) {
     const params = new URLSearchParams(filters);
     const response = await axios.get(`${API_BASE}/certificates?${params}`);
+    console.log(response)
     return response.data;
   }
 

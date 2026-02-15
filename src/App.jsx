@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
+
 import theme from './theme/theme';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -17,7 +18,9 @@ import ViewCertificates from './pages/ViewCertificates';
 import VerifyCertificate from './pages/VerifyCertificate';
 import Settings from './pages/Settings';
 
-// Protected Route Component
+/* =========================
+   Protected Route
+========================= */
 function ProtectedRoute({ children, adminOnly = false }) {
   const { isAuthenticated, isAdmin, loading } = useAuth();
 
@@ -36,7 +39,9 @@ function ProtectedRoute({ children, adminOnly = false }) {
   return children;
 }
 
-// Public Route (redirect if authenticated)
+/* =========================
+   Public Route
+========================= */
 function PublicRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
 
@@ -51,38 +56,86 @@ function PublicRoute({ children }) {
   return children;
 }
 
-function AppContent() {
+/* =========================
+   Routes
+========================= */
+function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-      <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
 
-      {/* Protected Routes */}
-      <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+      {/* Dashboard (Protected) */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<DashboardHome />} />
-        <Route path="generate" element={<ProtectedRoute adminOnly><GenerateCertificates /></ProtectedRoute>} />
-        <Route path="institutes" element={<ProtectedRoute adminOnly><ManageInstitutes /></ProtectedRoute>} />
+
+        <Route
+          path="generate"
+          element={
+            <ProtectedRoute adminOnly>
+              <GenerateCertificates />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="institutes"
+          element={
+            <ProtectedRoute adminOnly>
+              <ManageInstitutes />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="certificates" element={<ViewCertificates />} />
         <Route path="verify" element={<VerifyCertificate />} />
         <Route path="settings" element={<Settings />} />
       </Route>
 
-      {/* Default Route */}
+      {/* Redirects */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }
 
+/* =========================
+   App Root
+========================= */
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+
+      <SnackbarProvider
+        maxSnack={3}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
         <BrowserRouter>
           <AuthProvider>
-            <AppContent />
+            <AppRoutes />
           </AuthProvider>
         </BrowserRouter>
       </SnackbarProvider>

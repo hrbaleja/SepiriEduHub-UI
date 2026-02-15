@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
 
   const loadUser = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/v1/auth/me');
+      const response = await axios.get('https://api-sepiri.vercel.app/api/v1/auth/me');
       setUser(response.data.user);
     } catch (error) {
       console.error('Failed to load user:', error);
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/v1/auth/register', { name, email, password });
+      const response = await axios.post('https://api-sepiri.vercel.app/api/v1/auth/register', { name, email, password });
       const { token, user } = response.data;
 
       localStorage.setItem('token', token);

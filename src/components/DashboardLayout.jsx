@@ -107,9 +107,9 @@ function DashboardLayout() {
             <Typography variant="body2" fontWeight="600">
               {user?.name}
             </Typography>
-            <Chip 
-              label={user?.role} 
-              size="small" 
+            <Chip
+              label={user?.role}
+              size="small"
               color={isAdmin ? 'secondary' : 'default'}
               sx={{ mt: 0.5, height: 20, fontSize: '0.7rem' }}
             />
@@ -126,7 +126,7 @@ function DashboardLayout() {
           if (item.adminOnly && !isAdmin) return null;
 
           const isActive = location.pathname === item.path;
-          
+
           return (
             <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
               <ListItemButton
@@ -149,7 +149,7 @@ function DashboardLayout() {
                 <ListItemIcon sx={{ minWidth: 40 }}>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText 
+                <ListItemText
                   primary={item.text}
                   primaryTypographyProps={{
                     fontSize: '0.9rem',
@@ -186,7 +186,7 @@ function DashboardLayout() {
           >
             <MenuIcon />
           </IconButton>
-          
+
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
             {menuItems.find(item => item.path === location.pathname)?.text || 'Dashboard'}
           </Typography>

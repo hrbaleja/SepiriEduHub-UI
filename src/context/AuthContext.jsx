@@ -42,12 +42,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.post('https://api-sepiri.vercel.app/api/v1/auth/login', { email, password });
       const { token, user } = response.data;
-      
+
       localStorage.setItem('token', token);
       setToken(token);
       setUser(user);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+
       return { success: true };
     } catch (error) {
       return {
@@ -61,12 +61,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.post('http://localhost:5000/api/v1/auth/register', { name, email, password });
       const { token, user } = response.data;
-      
+
       localStorage.setItem('token', token);
       setToken(token);
       setUser(user);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+
       return { success: true };
     } catch (error) {
       return {

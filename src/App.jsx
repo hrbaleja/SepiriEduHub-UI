@@ -4,6 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 
+import './App.css';
 import theme from './theme/theme';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -13,8 +14,9 @@ import Register from './pages/Register';
 import DashboardLayout from './components/DashboardLayout';
 import DashboardHome from './pages/DashboardHome';
 import GenerateCertificates from './pages/GenerateCertificates';
-import ManageInstitutes from './pages/ManageInstitutes';
+
 import ViewCertificates from './pages/ViewCertificates';
+import ViewSentCertificates from './pages/ViewSentCertificates';
 import VerifyCertificate from './pages/VerifyCertificate';
 import Settings from './pages/Settings';
 
@@ -33,7 +35,7 @@ function ProtectedRoute({ children, adminOnly = false }) {
   }
 
   if (adminOnly && !isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
@@ -50,7 +52,7 @@ function PublicRoute({ children }) {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
@@ -82,7 +84,7 @@ function AppRoutes() {
 
       {/* Dashboard (Protected) */}
       <Route
-        path="/dashboard"
+        path="/"
         element={
           <ProtectedRoute>
             <DashboardLayout />
@@ -100,23 +102,15 @@ function AppRoutes() {
           }
         />
 
-        <Route
-          path="institutes"
-          element={
-            <ProtectedRoute adminOnly>
-              <ManageInstitutes />
-            </ProtectedRoute>
-          }
-        />
 
         <Route path="certificates" element={<ViewCertificates />} />
+        <Route path="sent-certificates" element={<ViewSentCertificates />} />
         <Route path="verify" element={<VerifyCertificate />} />
         <Route path="settings" element={<Settings />} />
       </Route>
 
       {/* Redirects */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

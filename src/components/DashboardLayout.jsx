@@ -16,7 +16,9 @@ import {
   Avatar,
   Menu,
   MenuItem,
-  Chip
+  TextField,
+  InputAdornment,
+  Button,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -26,19 +28,21 @@ import {
   Verified,
   Settings,
   Logout,
-  AccountCircle
+  Send,
+  Search
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
 const drawerWidth = 260;
 
 const menuItems = [
-  { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
-  { text: 'Generate Certificates', icon: <Pages />, path: '/dashboard/generate', adminOnly: true },
-  { text: 'Manage Institutes', icon: <School />, path: '/dashboard/institutes', adminOnly: true },
-  { text: 'View Certificates', icon: <Pages />, path: '/dashboard/certificates' },
-  { text: 'Verify Certificate', icon: <Verified />, path: '/dashboard/verify' },
-  { text: 'Settings', icon: <Settings />, path: '/dashboard/settings' },
+  { text: 'Dashboard', icon: <Dashboard />, path: '/' },
+  { text: 'Generate Certificates', icon: <Pages />, path: '/generate', adminOnly: true },
+
+  { text: 'View Certificates', icon: <Pages />, path: '/certificates' },
+  { text: 'Sent Certificates', icon: <Send />, path: '/sent-certificates' },
+  { text: 'Verify Certificate', icon: <Verified />, path: '/verify' },
+  { text: 'Settings', icon: <Settings />, path: '/settings' },
 ];
 
 function DashboardLayout() {
@@ -65,119 +69,83 @@ function DashboardLayout() {
     navigate('/login');
   };
 
+  const activeLabel = menuItems.find((item) => item.path === location.pathname)?.text || 'Dashboard';
+
   const drawer = (
-    <Box>
-      {/* Logo */}
-      <Box sx={{ p: 3, textAlign: 'center' }}>
-        <Box
-          sx={{
-            width: 60,
-            height: 60,
-            margin: '0 auto 12px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '24px',
-            fontWeight: 'bold',
-            color: 'white',
-            border: '3px solid #d4af37',
-          }}
-        >
-          SE
-        </Box>
-        <Typography variant="h6" fontWeight="bold">
-          Sepiri EduHub
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Certificate System
-        </Typography>
-      </Box>
-
-      <Divider />
-
-      {/* User Info */}
-      <Box sx={{ p: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Avatar sx={{ bgcolor: 'primary.main' }}>
-            {user?.name?.charAt(0).toUpperCase()}
-          </Avatar>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="body2" fontWeight="600">
-              {user?.name}
-            </Typography>
-            <Chip
-              label={user?.role}
-              size="small"
-              color={isAdmin ? 'secondary' : 'default'}
-              sx={{ mt: 0.5, height: 20, fontSize: '0.7rem' }}
-            />
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+      <Box>
+        <Box sx={{ px: 3, py: 4, textAlign: 'center' }}>
+          <Box
+            sx={{
+              width: 72,
+              height: 72,
+              mx: 'auto',
+              mb: 1,
+              borderRadius: '50%',
+              bgcolor: 'primary.main',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 28,
+              fontWeight: 'bold',
+              color: '#fff',
+            }}
+          >
+            SE
           </Box>
+          <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>
+            Sepiri EduHub
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+            Modern certificate control.
+          </Typography>
+        </Box>
+
+        <Box sx={{ px: 2 }}>
+          <List sx={{ px: 0 }}>
+            {menuItems.map((item) => {
+              if (item.adminOnly && !isAdmin) return null;
+              const isActive = location.pathname === item.path;
+
+              return (
+                <ListItem key={item.text} disablePadding >
+                  <ListItemButton
+                    selected={isActive}
+                    onClick={() => navigate(item.path)}
+                  >
+                    <ListItemIcon sx={{ minWidth: 40, color: isActive ? 'primary.main' : 'text.primary' }}>
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.text}
+                      primaryTypographyProps={{
+                        fontSize: '0.95rem',
+                        fontWeight: isActive ? 700 : 500,
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
         </Box>
       </Box>
-
-      <Divider />
-
-      {/* Menu Items */}
-      <List sx={{ px: 1, py: 2 }}>
-        {menuItems.map((item) => {
-          // Hide admin-only items from regular users
-          if (item.adminOnly && !isAdmin) return null;
-
-          const isActive = location.pathname === item.path;
-
-          return (
-            <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
-              <ListItemButton
-                selected={isActive}
-                onClick={() => navigate(item.path)}
-                sx={{
-                  borderRadius: 2,
-                  '&.Mui-selected': {
-                    bgcolor: 'primary.main',
-                    color: 'white',
-                    '& .MuiListItemIcon-root': {
-                      color: 'white',
-                    },
-                    '&:hover': {
-                      bgcolor: 'primary.dark',
-                    },
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 40 }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  primaryTypographyProps={{
-                    fontSize: '0.9rem',
-                    fontWeight: isActive ? 600 : 400,
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
     </Box>
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      {/* App Bar */}
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'transparent' }}>
       <AppBar
         position="fixed"
+        elevation={0}
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
-          bgcolor: 'white',
-          color: 'text.primary',
-          boxShadow: 1,
+          py: 0.5,
+          borderBottom: '1px dashed rgba(145, 158, 171, 0.24)',
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ gap: 2, px: { xs: 2, sm: 3, md: 4 } }}>
           <IconButton
             color="inherit"
             edge="start"
@@ -187,38 +155,76 @@ function DashboardLayout() {
             <MenuIcon />
           </IconButton>
 
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
-            {menuItems.find(item => item.path === location.pathname)?.text || 'Dashboard'}
-          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minWidth: 0 }}>
+            <Typography variant="h6" noWrap fontWeight={800} sx={{ fontSize: '1.25rem' }}>
+              {activeLabel}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" fontWeight={500}>
+              Sepiri EduHub Workspace
+            </Typography>
+          </Box>
 
-          <IconButton onClick={handleMenuOpen} size="large">
-            <AccountCircle />
-          </IconButton>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2, width: '100%', maxWidth: 500 }}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search..."
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search sx={{ color: 'text.disabled' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ bgcolor: 'transparent' }}
+            />
+            {isAdmin && (
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                onClick={() => navigate('/generate')}
+                sx={{ whiteSpace: 'nowrap', px: 3 }}
+              >
+                + New
+              </Button>
+            )}
+          </Box>
 
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem onClick={() => { navigate('/dashboard/settings'); handleMenuClose(); }}>
-              <ListItemIcon><Settings fontSize="small" /></ListItemIcon>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
+              {user?.name}
+            </Typography>
+            <IconButton onClick={handleMenuOpen} size="large">
+              <Avatar sx={{ bgcolor: 'primary.main' }}>
+                {user?.name?.charAt(0).toUpperCase()}
+              </Avatar>
+            </IconButton>
+          </Box>
+
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+            <MenuItem
+              onClick={() => {
+                navigate('/settings');
+                handleMenuClose();
+              }}
+            >
+              <ListItemIcon>
+                <Settings fontSize="small" />
+              </ListItemIcon>
               Settings
             </MenuItem>
             <Divider />
             <MenuItem onClick={handleLogout}>
-              <ListItemIcon><Logout fontSize="small" /></ListItemIcon>
+              <ListItemIcon>
+                <Logout fontSize="small" />
+              </ListItemIcon>
               Logout
             </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
 
-      {/* Drawer */}
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-      >
-        {/* Mobile drawer */}
+      <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
         <Drawer
           variant="temporary"
           open={mobileOpen}
@@ -232,31 +238,32 @@ function DashboardLayout() {
           {drawer}
         </Drawer>
 
-        {/* Desktop drawer */}
         <Drawer
           variant="permanent"
+          open
           sx={{
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: drawerWidth, 
+            },
           }}
-          open
         >
           {drawer}
         </Drawer>
       </Box>
 
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          bgcolor: 'background.default',
+          p: { xs: 3, md: 4 },
           minHeight: '100vh',
+          background: 'transparent',
         }}
       >
-        <Toolbar />
+        <Toolbar sx={{ mb: 3 }} />
         <Outlet />
       </Box>
     </Box>

@@ -6,26 +6,6 @@ const API_BASE = '/api/v1';
 axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'https://api-sepiri.vercel.app';
 
 class ApiService {
-  // Institutes
-  static async getInstitutes() {
-    const response = await axios.get(`${API_BASE}/institutes`);
-    return response.data;
-  }
-
-  static async createInstitute(collegeName) {
-    const response = await axios.post(`${API_BASE}/institutes`, { collegeName });
-    return response.data;
-  }
-
-  static async updateInstitute(id, collegeName) {
-    const response = await axios.put(`${API_BASE}/institutes/${id}`, { collegeName });
-    return response.data;
-  }
-
-  static async deleteInstitute(id) {
-    const response = await axios.delete(`${API_BASE}/institutes/${id}`);
-    return response.data;
-  }
 
   // Certificates
   static async generateCertificates(data) {
@@ -58,6 +38,24 @@ class ApiService {
     const response = await axios.get(`${API_BASE}/certificates/smtp/test`);
     return response.data;
   }
+
+  // Sent Certificates
+  static async getSentCertificates(filters = {}) {
+    const params = new URLSearchParams(filters);
+    const response = await axios.get(`${API_BASE}/certificates-sent?${params}`);
+    return response.data;
+  }
+
+  static async getSentCertificateBySerial(serialNumber) {
+    const response = await axios.get(`${API_BASE}/certificates-sent/${serialNumber}`);
+    return response.data;
+  }
+
+  static async seedSentCertificates() {
+    const response = await axios.post(`${API_BASE}/certificates-sent/seed`);
+    return response.data;
+  }
 }
 
 export default ApiService;
+

@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
-  Container,
   Box,
+  Container,
   Paper,
+  Typography,
   TextField,
   Button,
-  Typography,
   Link,
   Alert,
   InputAdornment,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Stack
 } from '@mui/material';
 import { Visibility, VisibilityOff, PersonAdd } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
@@ -45,13 +46,13 @@ function Register() {
 
     setLoading(true);
     const result = await register(formData.name, formData.email, formData.password);
-    
+
     if (result.success) {
-      navigate('/dashboard');
+      navigate('/');
     } else {
       setError(result.error);
     }
-    
+
     setLoading(false);
   };
 
@@ -61,127 +62,99 @@ function Register() {
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        justifyContent: 'center',
+        px: 2,
+        py: 6,
+        background: 'transparent',
       }}
     >
       <Container maxWidth="sm">
-        <Paper elevation={6} sx={{ p: 4, borderRadius: 3 }}>
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
-            <Box
-              sx={{
-                width: 80,
-                height: 80,
-                margin: '0 auto 16px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '32px',
-                fontWeight: 'bold',
-                color: 'white',
-                border: '4px solid #d4af37',
-              }}
-            >
-              SE
-            </Box>
-            <Typography variant="h4" fontWeight="bold" gutterBottom>
-              Sepiri EduHub
+        <Paper elevation={0} sx={{ p: { xs: 3, sm: 4 }, borderRadius: 3 }}>
+          <Box sx={{ textAlign: 'center', mb: 3.5 }}>
+            <Typography variant="overline" color="primary.main" sx={{ letterSpacing: 1.2, fontWeight: 700 }}>
+              Enterprise Access
+            </Typography>
+            <Typography variant="h4" gutterBottom>
+              Create Account
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Excellence in Financial Education
+              Register to access Sepiri EduHub dashboard
             </Typography>
           </Box>
 
-          <Typography variant="h5" fontWeight="600" gutterBottom textAlign="center" sx={{ mb: 3 }}>
-            Create Account
-          </Typography>
-
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 3 }}>
               {error}
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Full Name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              fullWidth
-              label="Email Address"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              fullWidth
-              label="Password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              value={formData.password}
-              onChange={handleChange}
-              required
-              sx={{ mb: 2 }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            <TextField
-              fullWidth
-              label="Confirm Password"
-              name="confirmPassword"
-              type={showPassword ? 'text' : 'password'}
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              sx={{ mb: 3 }}
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              size="large"
-              disabled={loading}
-              startIcon={loading ? <CircularProgress size={20} /> : <PersonAdd />}
-              sx={{
-                mb: 2,
-                py: 1.5,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              }}
-            >
-              {loading ? 'Creating Account...' : 'Create Account'}
-            </Button>
-
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary">
-                Already have an account?{' '}
-                <Link component={RouterLink} to="/login" underline="hover" fontWeight="600">
-                  Sign in
-                </Link>
-              </Typography>
+          <Box component="form" onSubmit={handleSubmit}>
+            <Stack spacing={2}>
+                <TextField
+                  fullWidth
+                  label="Full name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Email address"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton edge="end" onClick={() => setShowPassword(!showPassword)}>
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  label="Confirm password"
+                  name="confirmPassword"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  disabled={loading}
+                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <PersonAdd />}
+                  sx={{ py: 1.5 }}
+                >
+                  {loading ? 'Creating account...' : 'Register'}
+                </Button>
+              </Stack>
             </Box>
-          </form>
-        </Paper>
+
+            <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 3 }}>
+              Already have an account?{' '}
+              <Link component={RouterLink} to="/login" underline="hover" fontWeight={700}>
+                Sign in
+              </Link>
+            </Typography>
+          </Paper>
       </Container>
     </Box>
   );

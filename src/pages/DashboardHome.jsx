@@ -8,14 +8,13 @@ import {
   CardContent,
   CircularProgress,
   Alert,
-  LinearProgress
+  Button
 } from '@mui/material';
 import {
   School,
   Pages,
   TrendingUp,
   CheckCircle,
-  People
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import ApiService from '../services/api';
@@ -27,11 +26,7 @@ function StatCard({ title, value, icon, color, loading, subtitle }) {
         height: '100%', 
         position: 'relative', 
         overflow: 'hidden',
-        transition: 'transform 0.2s, box-shadow 0.2s',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: 4
-        }
+        borderRadius: 3,
       }}
     >
       <CardContent>
@@ -65,25 +60,14 @@ function StatCard({ title, value, icon, color, loading, subtitle }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              bgcolor: `${color}.lighter`,
-              color: `${color}.main`,
-              background: theme => `linear-gradient(135deg, ${theme.palette[color].light} 0%, ${theme.palette[color].main} 100%)`,
+              bgcolor: `${color}.light`,
+              color: `${color}.dark`,
             }}
           >
             {icon}
           </Box>
         </Box>
       </CardContent>
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 4,
-          bgcolor: `${color}.main`,
-        }}
-      />
     </Card>
   );
 }
@@ -91,7 +75,7 @@ function StatCard({ title, value, icon, color, loading, subtitle }) {
 function DashboardHome() {
   const { user, isAdmin } = useAuth();
   const [stats, setStats] = useState({
-    totalInstitutes: 0,
+
     totalCertificates: 0,
     recentCertificates: 0,
     thisMonth: 0
@@ -109,8 +93,7 @@ function DashboardHome() {
       setLoading(true);
       setError('');
       
-      // Load institutes
-      const institutesData = await ApiService.getInstitutes();
+
       
       // Load certificates
       const certificatesData = await ApiService.getCertificates();
@@ -140,7 +123,7 @@ function DashboardHome() {
         .slice(0, 5);
 
       setStats({
-        totalInstitutes: institutesData.institutes?.length || 0,
+
         totalCertificates: total,
         recentCertificates: recent,
         thisMonth: thisMonth
@@ -157,31 +140,67 @@ function DashboardHome() {
 
   return (
     <Box>
-      {/* Welcome Section */}
+      {/* Hero Section */}
       <Paper
         elevation={0}
         sx={{
-          p: 4,
+          p: { xs: 3, md: 4 },
           mb: 4,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          bgcolor: 'primary.dark',
           color: 'white',
           borderRadius: 3,
         }}
       >
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Welcome back, {user?.name}! 👋
-        </Typography>
-        <Typography variant="body1" sx={{ opacity: 0.95, maxWidth: 600 }}>
-          {isAdmin 
-            ? 'You have full administrative access. Manage institutes and generate certificates from your dashboard.'
-            : 'View your certificates and verify their authenticity. Access all your educational achievements.'}
-        </Typography>
+        <Grid container spacing={3} alignItems="center">
+          <Grid item xs={12} md={7}>
+            <Typography variant="h3" fontWeight="bold" gutterBottom>
+              The modern certificate platform for your institution.
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.92, maxWidth: 560, mb: 3 }}>
+              Track, generate, and verify certificates with a clean, intuitive workspace built for fast admin workflows.
+            </Typography>
+
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              <Button variant="contained" color="secondary" size="large" sx={{ boxShadow: '0 20px 40px rgba(0, 0, 0, 0.16)' }}>
+                Generate Certificate
+              </Button>
+              <Button variant="outlined" size="large" sx={{ color: '#fff', borderColor: 'rgba(255,255,255,0.45)' }}>
+                View Certificates
+              </Button>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={5}>
+            <Paper sx={{ p: 3, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.94)', color: 'text.primary' }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}>
+                Quick overview
+              </Typography>
+              <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
+                Certificate activity
+              </Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                <Box sx={{ p: 2, bgcolor: '#f2f6fd', borderRadius: 2 }}>
+                  <Typography variant="h4" fontWeight={700}>{stats.totalCertificates}</Typography>
+                  <Typography variant="caption" color="text.secondary">Total certificates</Typography>
+                </Box>
+
+                <Box sx={{ p: 2, bgcolor: '#f2f6fd', borderRadius: 2 }}>
+                  <Typography variant="h4" fontWeight={700}>{stats.recentCertificates}</Typography>
+                  <Typography variant="caption" color="text.secondary">Last 7 days</Typography>
+                </Box>
+                <Box sx={{ p: 2, bgcolor: '#f2f6fd', borderRadius: 2 }}>
+                  <Typography variant="h4" fontWeight={700}>{stats.thisMonth}</Typography>
+                  <Typography variant="caption" color="text.secondary">This month</Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
       </Paper>
 
       {error && (
-        <Alert 
-          severity="error" 
-          sx={{ mb: 3 }} 
+        <Alert
+          severity="error"
+          sx={{ mb: 3 }}
           onClose={() => setError('')}
         >
           {error}
@@ -190,16 +209,7 @@ function DashboardHome() {
 
       {/* Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Total Institutes"
-            value={stats.totalInstitutes}
-            subtitle="Active colleges"
-            icon={<School sx={{ fontSize: 32 }} />}
-            color="primary"
-            loading={loading}
-          />
-        </Grid>
+
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Total Certificates"
@@ -236,60 +246,52 @@ function DashboardHome() {
       <Grid container spacing={3}>
         {/* Quick Actions */}
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, height: '100%' }}>
+          <Paper sx={{ p: 3, height: '100%', borderRadius: 3 }}>
             <Typography variant="h6" fontWeight="600" gutterBottom sx={{ mb: 3 }}>
               Quick Actions
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>
               {isAdmin ? (
                 <>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'primary.lighter', borderRadius: 2 }}>
-                    <Pages color="primary" />
-                    <Box>
-                      <Typography variant="body1" fontWeight={500}>Generate Certificates</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Create and send certificates to participants
-                      </Typography>
+                  <Box sx={{ p: 3, borderRadius: 3, border: '1px solid rgba(15,23,42,0.08)', bgcolor: '#f8fbff' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                      <Pages color="primary" sx={{ fontSize: 28 }} />
+                      <Typography variant="body1" fontWeight={700}>Generate Certificates</Typography>
                     </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Create and send certificates to participants in seconds.
+                    </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'secondary.lighter', borderRadius: 2 }}>
-                    <School color="secondary" />
-                    <Box>
-                      <Typography variant="body1" fontWeight={500}>Manage Institutes</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Add, edit, or remove colleges and institutes
-                      </Typography>
+
+                  <Box sx={{ p: 3, borderRadius: 3, border: '1px solid rgba(15,23,42,0.08)', bgcolor: '#f8fbff' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                      <CheckCircle color="success" sx={{ fontSize: 28 }} />
+                      <Typography variant="body1" fontWeight={700}>View Certificates</Typography>
                     </Box>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'success.lighter', borderRadius: 2 }}>
-                    <CheckCircle color="success" />
-                    <Box>
-                      <Typography variant="body1" fontWeight={500}>View All Certificates</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Browse and download issued certificates
-                      </Typography>
-                    </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Browse all issued certificates and verify participant records.
+                    </Typography>
                   </Box>
                 </>
               ) : (
                 <>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'primary.lighter', borderRadius: 2 }}>
-                    <Pages color="primary" />
-                    <Box>
-                      <Typography variant="body1" fontWeight={500}>View Certificates</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Access all your certificates
-                      </Typography>
+                  <Box sx={{ p: 3, borderRadius: 3, border: '1px solid rgba(15,23,42,0.08)', bgcolor: '#f8fbff' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                      <Pages color="primary" sx={{ fontSize: 28 }} />
+                      <Typography variant="body1" fontWeight={700}>View Certificates</Typography>
                     </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Access your certificates and check completion status quickly.
+                    </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'secondary.lighter', borderRadius: 2 }}>
-                    <CheckCircle color="secondary" />
-                    <Box>
-                      <Typography variant="body1" fontWeight={500}>Verify Certificate</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Check certificate authenticity
-                      </Typography>
+                  <Box sx={{ p: 3, borderRadius: 3, border: '1px solid rgba(15,23,42,0.08)', bgcolor: '#f8fbff' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                      <CheckCircle color="secondary" sx={{ fontSize: 28 }} />
+                      <Typography variant="body1" fontWeight={700}>Verify Certificate</Typography>
                     </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Confirm certificate authenticity with the built-in verification tool.
+                    </Typography>
                   </Box>
                 </>
               )}
@@ -299,7 +301,7 @@ function DashboardHome() {
 
         {/* System Information */}
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, height: '100%' }}>
+          <Paper sx={{ p: 3, height: '100%', borderRadius: 3 }}>
             <Typography variant="h6" fontWeight="600" gutterBottom sx={{ mb: 3 }}>
               System Information
             </Typography>
@@ -370,7 +372,7 @@ function DashboardHome() {
         {/* Recent Activity */}
         {recentActivity.length > 0 && (
           <Grid item xs={12}>
-            <Paper sx={{ p: 3 }}>
+            <Paper sx={{ p: 3, borderRadius: 3 }}>
               <Typography variant="h6" fontWeight="600" gutterBottom sx={{ mb: 2 }}>
                 Recent Certificates
               </Typography>
@@ -392,7 +394,7 @@ function DashboardHome() {
                         {cert.participantName}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {cert.programName} • {cert.collegeName}
+                        {cert.programName}
                       </Typography>
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>

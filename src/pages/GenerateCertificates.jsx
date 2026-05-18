@@ -47,9 +47,7 @@ function GenerateCertificates() {
   
   // State
   const [programs, setPrograms] = useState([]);
-  const [institutes, setInstitutes] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState('');
-  const [selectedInstitute, setSelectedInstitute] = useState('');
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -59,7 +57,6 @@ function GenerateCertificates() {
 
   useEffect(() => {
     loadPrograms();
-    loadInstitutes();
   }, []);
 
   const loadPrograms = async () => {
@@ -72,15 +69,7 @@ function GenerateCertificates() {
     }
   };
 
-  const loadInstitutes = async () => {
-    try {
-      const data = await ApiService.getInstitutes();
-      setInstitutes(data.institutes || []);
-    } catch (err) {
-      console.error('Failed to load institutes:', err);
-      enqueueSnackbar('Failed to load institutes', { variant: 'error' });
-    }
-  };
+
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -157,7 +146,6 @@ function GenerateCertificates() {
   const handleClearAll = () => {
     setParticipants([]);
     setSelectedProgram('');
-    setSelectedInstitute('');
     setResults(null);
     setError('');
   };
@@ -168,10 +156,7 @@ function GenerateCertificates() {
       setError('Please select a program');
       return;
     }
-    if (!selectedInstitute) {
-      setError('Please select an institute');
-      return;
-    }
+
     if (participants.length === 0) {
       setError('Please upload participants');
       return;
@@ -183,8 +168,7 @@ function GenerateCertificates() {
     try {
       const response = await ApiService.generateCertificates({
         participants,
-        programCode: selectedProgram,
-        instituteId: selectedInstitute
+        programCode: selectedProgram
       });
 
       setResults(response.results);
@@ -196,7 +180,6 @@ function GenerateCertificates() {
       // Clear form after success
       setParticipants([]);
       setSelectedProgram('');
-      setSelectedInstitute('');
     } catch (err) {
       const errorMsg = err.response?.data?.error || 'Failed to generate certificates';
       setError(errorMsg);
@@ -207,7 +190,7 @@ function GenerateCertificates() {
   };
 
   const selectedProgramData = programs.find(p => p.code === selectedProgram);
-  const selectedInstituteData = institutes.find(i => i._id === selectedInstitute);
+
 
   return (
     <Box>
@@ -264,44 +247,12 @@ function GenerateCertificates() {
         )}
       </Paper>
 
-      {/* Institute Selection */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom fontWeight={600}>
-          Step 2: Select Institute/College
-        </Typography>
-        <FormControl fullWidth sx={{ mt: 2 }}>
-          <InputLabel>Institute/College *</InputLabel>
-          <Select
-            value={selectedInstitute}
-            onChange={(e) => setSelectedInstitute(e.target.value)}
-            label="Institute/College *"
-          >
-            <MenuItem value="">
-              <em>Select an institute</em>
-            </MenuItem>
-            {institutes.map((institute) => (
-              <MenuItem key={institute._id} value={institute._id}>
-                <Box>
-                  <Typography variant="body1" fontWeight={500}>
-                    {institute.collegeName}
-                  </Typography>
-                </Box>
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
 
-        {selectedInstituteData && (
-          <Alert severity="success" sx={{ mt: 2 }}>
-            <strong>Selected Institute:</strong> {selectedInstituteData.collegeName}
-          </Alert>
-        )}
-      </Paper>
 
       {/* File Upload */}
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom fontWeight={600}>
-          Step 3: Upload Participants
+          Step 2: Upload Participants
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Upload a CSV or Excel file with columns: <strong>name</strong> and <strong>email</strong>
@@ -391,7 +342,7 @@ function GenerateCertificates() {
       )}
 
       {/* Preview */}
-      {selectedProgram && selectedInstitute && participants.length > 0 && (
+      {selectedProgram && participants.length > 0 && (
         <Paper sx={{ p: 3, mb: 3, bgcolor: 'primary.lighter' }}>
           <Typography variant="h6" gutterBottom fontWeight={600}>
             Certificate Preview
@@ -401,9 +352,7 @@ function GenerateCertificates() {
               <Typography variant="body2" color="text.secondary">
                 <strong>Program:</strong> {selectedProgramData?.name} ({selectedProgram})
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                <strong>Institute:</strong> {selectedInstituteData?.collegeName}
-              </Typography>
+
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="body2" color="text.secondary">
@@ -421,15 +370,14 @@ function GenerateCertificates() {
       <Box sx={{ textAlign: 'center', mb: 3 }}>
         <Button
           variant="contained"
+          color="primary"
           size="large"
-          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Send />}
           onClick={handleGenerate}
-          disabled={loading || !selectedProgram || !selectedInstitute || participants.length === 0}
+          disabled={loading || !selectedProgram || participants.length === 0}
+          startIcon={loading && <CircularProgress size={20} color="inherit" />}
           sx={{
-            px: 6,
-            py: 2,
-            fontSize: '1.1rem',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            py: 1.5,
+            px: 4,
           }}
         >
           {loading ? 'Generating...' : `Generate & Send ${participants.length} Certificates`}

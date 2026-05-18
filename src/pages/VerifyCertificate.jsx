@@ -104,12 +104,12 @@ function VerifyCertificate() {
                 fullWidth
                 type="submit"
                 variant="contained"
+                color="primary"
                 size="large"
                 disabled={loading}
                 startIcon={loading ? <CircularProgress size={20} /> : <Search />}
                 sx={{
                   py: 1.5,
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 }}
               >
                 {loading ? 'Verifying...' : 'Verify Certificate'}

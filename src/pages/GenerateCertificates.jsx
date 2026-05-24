@@ -38,7 +38,7 @@ import {
   Close
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
-import ApiService from '../services/api';
+import ApiService from '../services';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 

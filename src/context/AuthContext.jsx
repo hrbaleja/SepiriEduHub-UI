@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import ApiService, { apiClient } from '../services';
 
 const AuthContext = createContext(null);
 
@@ -16,20 +16,20 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
-  // Set axios default headers
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       loadUser();
     } else {
+      delete apiClient.defaults.headers.common['Authorization'];
       setLoading(false);
     }
   }, [token]);
 
   const loadUser = async () => {
     try {
-      const response = await axios.get('https://api-sepiri.vercel.app/api/v1/auth/me');
-      setUser(response.data.user);
+      const response = await ApiService.getCurrentUser();
+      setUser(response.user);
     } catch (error) {
       console.error('Failed to load user:', error);
       logout();
@@ -40,13 +40,13 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('https://api-sepiri.vercel.app/api/v1/auth/login', { email, password });
-      const { token, user } = response.data;
+      const response = await ApiService.login(email, password);
+      const { token: authToken, user: currentUser } = response;
 
-      localStorage.setItem('token', token);
-      setToken(token);
-      setUser(user);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      localStorage.setItem('token', authToken);
+      setToken(authToken);
+      setUser(currentUser);
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
 
       return { success: true };
     } catch (error) {
@@ -59,13 +59,13 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const response = await axios.post('https://api-sepiri.vercel.app/api/v1/auth/register', { name, email, password });
-      const { token, user } = response.data;
+      const response = await ApiService.register(name, email, password);
+      const { token: authToken, user: currentUser } = response;
 
-      localStorage.setItem('token', token);
-      setToken(token);
-      setUser(user);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      localStorage.setItem('token', authToken);
+      setToken(authToken);
+      setUser(currentUser);
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
 
       return { success: true };
     } catch (error) {
@@ -80,13 +80,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
-    delete axios.defaults.headers.common['Authorization'];
+    delete apiClient.defaults.headers.common['Authorization'];
   };
 
   const updateProfile = async (name, email) => {
     try {
-      const response = await axios.put('/api/auth/profile', { name, email });
-      setUser(response.data.user);
+      const response = await ApiService.updateProfile(name, email);
+      setUser(response.user);
       return { success: true };
     } catch (error) {
       return {
@@ -98,12 +98,36 @@ export const AuthProvider = ({ children }) => {
 
   const changePassword = async (currentPassword, newPassword) => {
     try {
-      await axios.put('/api/auth/change-password', { currentPassword, newPassword });
+      await ApiService.changePassword(currentPassword, newPassword);
       return { success: true };
     } catch (error) {
       return {
         success: false,
         error: error.response?.data?.error || 'Password change failed'
+      };
+    }
+  };
+
+  const forgotPassword = async (email) => {
+    try {
+      const response = await ApiService.forgotPassword(email);
+      return { success: true, message: response.message || 'Check your email for reset instructions' };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Failed to request password reset'
+      };
+    }
+  };
+
+  const resetPassword = async (token, password) => {
+    try {
+      const response = await ApiService.resetPassword(token, password);
+      return { success: true, message: response.message || 'Password reset successful' };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Failed to reset password'
       };
     }
   };
@@ -118,6 +142,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateProfile,
     changePassword,
+    forgotPassword,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

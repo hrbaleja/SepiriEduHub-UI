@@ -17,7 +17,7 @@ import {
   CheckCircle,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
-import ApiService from '../services/api';
+import ApiService from '../services';
 
 function StatCard({ title, value, icon, color, loading, subtitle }) {
   return (

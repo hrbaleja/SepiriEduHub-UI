@@ -30,7 +30,7 @@ import {
   Pages as CertificateIcon
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
-import ApiService from '../services/api';
+import ApiService from '../services';
 
 function ViewCertificates() {
   const { enqueueSnackbar } = useSnackbar();
@@ -39,9 +39,7 @@ function ViewCertificates() {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterProgram, setFilterProgram] = useState('');
-  const [filterInstitute, setFilterInstitute] = useState('');
   const [programs, setPrograms] = useState([]);
-  const [institutes, setInstitutes] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -74,17 +72,6 @@ function ViewCertificates() {
         setPrograms([]);
       }
       
-      // Load institutes
-      try {
-        const instsData = await ApiService.getInstitutes();
-        const institutesArray = Array.isArray(instsData)
-          ? instsData
-          : (instsData.institutes || instsData.data || []);
-        setInstitutes(institutesArray);
-      } catch (err) {
-        console.log('Institutes not available:', err);
-        setInstitutes([]);
-      }
       
     } catch (err) {
       console.error('Load error:', err);
@@ -93,7 +80,6 @@ function ViewCertificates() {
       // Set empty arrays to prevent filter errors
       setCertificates([]);
       setPrograms([]);
-      setInstitutes([]);
     } finally {
       setLoading(false);
     }
@@ -111,15 +97,13 @@ function ViewCertificates() {
       cert.participantEmail?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesProgram = !filterProgram || cert.programCode === filterProgram;
-    const matchesInstitute = !filterInstitute || cert.institute === filterInstitute;
     
-    return matchesSearch && matchesProgram && matchesInstitute;
+    return matchesSearch && matchesProgram;
   }) : [];
 
   const clearFilters = () => {
     setSearchTerm('');
     setFilterProgram('');
-    setFilterInstitute('');
   };
 
   return (
@@ -147,7 +131,7 @@ function ViewCertificates() {
         </Typography>
         
         <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={5}>
             <TextField
               fullWidth
               placeholder="Search by name, email, or serial..."
@@ -163,7 +147,7 @@ function ViewCertificates() {
             />
           </Grid>
           
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={4}>
             <FormControl fullWidth>
               <InputLabel>Program</InputLabel>
               <Select
@@ -182,24 +166,6 @@ function ViewCertificates() {
           </Grid>
           
           <Grid item xs={12} md={3}>
-            <FormControl fullWidth>
-              <InputLabel>Institute</InputLabel>
-              <Select
-                value={filterInstitute}
-                onChange={(e) => setFilterInstitute(e.target.value)}
-                label="Institute"
-              >
-                <MenuItem value="">All Institutes</MenuItem>
-                {institutes.map((inst) => (
-                  <MenuItem key={inst._id} value={inst._id}>
-                    {inst.collegeName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          
-          <Grid item xs={12} md={2}>
             <Button
               fullWidth
               variant="outlined"
@@ -273,7 +239,7 @@ function ViewCertificates() {
                   <TableCell sx={{ fontWeight: 'bold' }}>Participant</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Program</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Institute</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Conducted At</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Serial Number</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Issue Date</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }} align="center">Actions</TableCell>

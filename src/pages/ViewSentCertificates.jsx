@@ -33,7 +33,7 @@ import {
   Person
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
-import ApiService from '../services/api';
+import ApiService from '../services';
 
 function ViewSentCertificates() {
   const { enqueueSnackbar } = useSnackbar();

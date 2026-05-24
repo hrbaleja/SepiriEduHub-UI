@@ -20,7 +20,7 @@ import {
   Verified
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
-import ApiService from '../services/api';
+import ApiService from '../services';
 
 function VerifyCertificate() {
   const { enqueueSnackbar } = useSnackbar();
@@ -260,14 +260,7 @@ function VerifyCertificate() {
                 </Typography>
               </Grid>
 
-              {/* Collaboration */}
-              <Grid item xs={12}>
-                <Alert severity="info" sx={{ mt: 2 }}>
-                  <Typography variant="body2">
-                    <strong>In collaboration with:</strong> Sepiri EduHub
-                  </Typography>
-                </Alert>
-              </Grid>
+
 
               {/* Download Button */}
               <Grid item xs={12}>

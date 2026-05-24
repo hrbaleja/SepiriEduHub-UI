@@ -32,6 +32,7 @@ import {
   Search
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/logo.png';
 
 const drawerWidth = 260;
 
@@ -76,23 +77,21 @@ function DashboardLayout() {
       <Box>
         <Box sx={{ px: 3, py: 4, textAlign: 'center' }}>
           <Box
+            component="img"
+            src={logo}
+            alt="Sepiri EduHub logo"
             sx={{
               width: 72,
               height: 72,
               mx: 'auto',
               mb: 1,
-              borderRadius: '50%',
-              bgcolor: 'primary.main',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 28,
-              fontWeight: 'bold',
-              color: '#fff',
+              borderRadius: 2,
+              objectFit: 'contain',
+              bgcolor: 'transparent',
+              p: 1,
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
             }}
-          >
-            SE
-          </Box>
+          />
           <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>
             Sepiri EduHub
           </Typography>

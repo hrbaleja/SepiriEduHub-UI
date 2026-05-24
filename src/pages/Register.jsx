@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff, PersonAdd } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/logo.png';
 
 function Register() {
   const navigate = useNavigate();
@@ -71,6 +72,12 @@ function Register() {
       <Container maxWidth="sm">
         <Paper elevation={0} sx={{ p: { xs: 3, sm: 4 }, borderRadius: 3 }}>
           <Box sx={{ textAlign: 'center', mb: 3.5 }}>
+            <Box
+              component="img"
+              src={logo}
+              alt="Sepiri EduHub logo"
+              sx={{ width: 180, height: 180, display: 'block', mx: 'auto', mb: 2 }}
+            />
             <Typography variant="overline" color="primary.main" sx={{ letterSpacing: 1.2, fontWeight: 700 }}>
               Enterprise Access
             </Typography>
